@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurningBox.GranTurismoSport.Strategie.Console", "BurningBox.GranTurismoSport.Strategie.Console\BurningBox.GranTurismoSport.Strategie.Console.csproj", "{AAA44956-FBC2-4DDC-906F-34B4F86B1FF2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurningBox.GranTurismoSport.Strategie.Console", "src\BurningBox.GranTurismoSport.Strategie.Console\BurningBox.GranTurismoSport.Strategie.Console.csproj", "{AAA44956-FBC2-4DDC-906F-34B4F86B1FF2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7445316A-CC96-4199-ABEF-904EE27130EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,6 +20,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AAA44956-FBC2-4DDC-906F-34B4F86B1FF2} = {7445316A-CC96-4199-ABEF-904EE27130EC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {83B98338-9289-44BD-B7BE-0A050407DEEF}
