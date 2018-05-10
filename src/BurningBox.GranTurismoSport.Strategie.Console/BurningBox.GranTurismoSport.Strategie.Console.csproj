@@ -5,4 +5,8 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BurningBox.GranTurismoSport.Strategie\BurningBox.GranTurismoSport.Strategie.csproj" />
+  </ItemGroup>
+
 </Project>
