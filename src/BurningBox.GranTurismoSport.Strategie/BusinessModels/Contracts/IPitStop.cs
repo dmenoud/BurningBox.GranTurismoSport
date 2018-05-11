@@ -2,9 +2,9 @@
 {
     public interface IPitStop
     {
-        int LapsNumber { get; set; }
+        int LapNumber { get; set; }
         bool ChangeTires { get; set; }
         bool Refuel { get; set; }
-        TireType TireType { get; set; }
+        TiresType TiresType { get; set; }
     }
 }

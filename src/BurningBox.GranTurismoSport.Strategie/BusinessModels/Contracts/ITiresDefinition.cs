@@ -2,9 +2,9 @@
 
 namespace BurningBox.GranTurismoSport.Strategie.BusinessModels.Contracts
 {
-    public interface ITireDefinition
+    public interface ITiresDefinition
     {
-        TireType TireType { get; }
+        TiresType TiresType { get; }
         int OptimalNumberOfLaps { get; }
         TimeSpan AverageLapTime { get; }
     }

@@ -7,10 +7,10 @@ namespace BurningBox.GranTurismoSport.Strategie.BusinessModels
 {
     public class RaceDefinition : IRaceDefinition
     {
-        public RaceDefinition(TimeSpan raceDuration, [NotNull] List<ITireDefinition> tireDefinition, string trackName, TimeSpan fuelFillingDuration, int fuelToFillInPercent, TimeSpan tiresChangeDuration, TimeSpan timeLostForPitStop, double numberOfLapsWithFullFuel)
+        public RaceDefinition(TimeSpan raceDuration, [NotNull] List<ITiresDefinition> tireDefinition, string trackName, TimeSpan fuelFillingDuration, int fuelToFillInPercent, TimeSpan tiresChangeDuration, TimeSpan timeLostForPitStop, double numberOfLapsWithFullFuel)
         {
             this.RaceDuration = raceDuration;
-            this.TireDefinitions = tireDefinition;
+            this.TiresDefinitions = tireDefinition;
             this.TrackName = trackName;
             this.FuelFillingDuration = fuelFillingDuration;
             this.FuelToFillInPercent = fuelToFillInPercent;
@@ -20,10 +20,10 @@ namespace BurningBox.GranTurismoSport.Strategie.BusinessModels
             this.RaceMode = RaceMode.Endurance;
         }
 
-        public RaceDefinition(int numberOfLaps, [NotNull] List<ITireDefinition> tireDefinition, string trackName, TimeSpan fuelFillingDuration, int fuelToFillInPercent, TimeSpan tiresChangeDuration, TimeSpan timeLostForPitStop, double numberOfLapsWithFullFuel)
+        public RaceDefinition(int numberOfLaps, [NotNull] List<ITiresDefinition> tireDefinition, string trackName, TimeSpan fuelFillingDuration, int fuelToFillInPercent, TimeSpan tiresChangeDuration, TimeSpan timeLostForPitStop, double numberOfLapsWithFullFuel)
         {
             this.NumberOfLaps = numberOfLaps;
-            this.TireDefinitions = tireDefinition;
+            this.TiresDefinitions = tireDefinition;
             this.TrackName = trackName;
             this.FuelFillingDuration = fuelFillingDuration;
             this.FuelToFillInPercent = fuelToFillInPercent;
@@ -37,7 +37,7 @@ namespace BurningBox.GranTurismoSport.Strategie.BusinessModels
         public RaceMode RaceMode { get; }
         public TimeSpan RaceDuration { get; }
         public int NumberOfLaps { get; }
-        public List<ITireDefinition> TireDefinitions { get; }
+        public List<ITiresDefinition> TiresDefinitions { get; }
         public TimeSpan FuelFillingDuration { get; }
         public int FuelToFillInPercent { get; }
         public TimeSpan TiresChangeDuration { get; }

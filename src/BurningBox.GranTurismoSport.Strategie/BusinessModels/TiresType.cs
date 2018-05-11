@@ -1,6 +1,6 @@
 ﻿namespace BurningBox.GranTurismoSport.Strategie.BusinessModels
 {
-    public enum TireType    
+    public enum TiresType    
     {
         OffRoadDirtTires = 0,
         WetRacingIntermediate = 1,

@@ -7,7 +7,7 @@ namespace BurningBox.GranTurismoSport.Strategie.BusinessModels
     public class StrategieResult : IStrategieResult
     {
         public List<IPitStop> PitStops { get; set; }
-        public TireType StartTireType { get; set; }
+        public TiresType StartTiresType { get; set; }
         public TimeSpan RaceTime { get; set; }
     }
 }

@@ -3,16 +3,16 @@ using BurningBox.GranTurismoSport.Strategie.BusinessModels.Contracts;
 
 namespace BurningBox.GranTurismoSport.Strategie.BusinessModels
 {
-    public class TireDefinition : ITireDefinition
+    public class TiresDefinition : ITiresDefinition
     {
-        public TireDefinition(TireType tireType, int optimalNumberOfLaps, TimeSpan averageLapTime)
+        public TiresDefinition(TiresType tiresType, int optimalNumberOfLaps, TimeSpan averageLapTime)
         {
-            this.TireType = tireType;
+            this.TiresType = tiresType;
             this.OptimalNumberOfLaps = optimalNumberOfLaps;
             this.AverageLapTime = averageLapTime;
         }
 
-        public TireType TireType { get; }
+        public TiresType TiresType { get; }
         public int OptimalNumberOfLaps { get; }
         public TimeSpan AverageLapTime { get; }
     }

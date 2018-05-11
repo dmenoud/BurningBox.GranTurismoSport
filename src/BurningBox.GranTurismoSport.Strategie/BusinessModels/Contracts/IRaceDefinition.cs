@@ -10,7 +10,7 @@ namespace BurningBox.GranTurismoSport.Strategie.BusinessModels.Contracts
         RaceMode RaceMode { get; }
         TimeSpan RaceDuration { get; }
         int NumberOfLaps { get; }
-        List<ITireDefinition> TireDefinitions { get; }
+        List<ITiresDefinition> TiresDefinitions { get; }
         TimeSpan FuelFillingDuration { get; }
         int FuelToFillInPercent { get; }
         TimeSpan TiresChangeDuration { get; }
