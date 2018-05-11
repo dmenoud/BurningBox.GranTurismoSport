@@ -1,31 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using BurningBox.GranTurismoSport.Strategie.BusinessModels.Contracts;
+using JetBrains.Annotations;
 
 namespace BurningBox.GranTurismoSport.Strategie.BusinessModels
 {
     public class RaceDefinition : IRaceDefinition
     {
-        public RaceDefinition(TimeSpan raceDuration, List<ITireDefinition> tireDefinition)
+        public RaceDefinition(TimeSpan raceDuration, [NotNull] List<ITireDefinition> tireDefinition, string trackName, TimeSpan fuelFillingDuration, int fuelToFillInPercent, TimeSpan tiresChangeDuration, TimeSpan timeLostForPitStop, double numberOfLapsWithFullFuel)
         {
             this.RaceDuration = raceDuration;
-            this.TireDefinition = tireDefinition;
+            this.TireDefinitions = tireDefinition;
+            this.TrackName = trackName;
+            this.FuelFillingDuration = fuelFillingDuration;
+            this.FuelToFillInPercent = fuelToFillInPercent;
+            this.TiresChangeDuration = tiresChangeDuration;
+            this.TimeLostForPitStop = timeLostForPitStop;
+            this.NumberOfLapsWithFullFuel = numberOfLapsWithFullFuel;
             this.RaceMode = RaceMode.Endurance;
         }
 
-        public RaceDefinition(int numberOfLaps, List<ITireDefinition> tireDefinition)
+        public RaceDefinition(int numberOfLaps, [NotNull] List<ITireDefinition> tireDefinition, string trackName, TimeSpan fuelFillingDuration, int fuelToFillInPercent, TimeSpan tiresChangeDuration, TimeSpan timeLostForPitStop, double numberOfLapsWithFullFuel)
         {
             this.NumberOfLaps = numberOfLaps;
-            this.TireDefinition = tireDefinition;
+            this.TireDefinitions = tireDefinition;
+            this.TrackName = trackName;
+            this.FuelFillingDuration = fuelFillingDuration;
+            this.FuelToFillInPercent = fuelToFillInPercent;
+            this.TiresChangeDuration = tiresChangeDuration;
+            this.TimeLostForPitStop = timeLostForPitStop;
+            this.NumberOfLapsWithFullFuel = numberOfLapsWithFullFuel;
             this.RaceMode = RaceMode.Race;
         }
 
-        public string TrackName { get; set; }
+        public string TrackName { get;}
         public RaceMode RaceMode { get; }
-        public int TireWearFactor { get; set; }
-        public int FuelConsumptionFactor { get; set; }
         public TimeSpan RaceDuration { get; }
         public int NumberOfLaps { get; }
-        public List<ITireDefinition> TireDefinition { get; }
+        public List<ITireDefinition> TireDefinitions { get; }
+        public TimeSpan FuelFillingDuration { get; }
+        public int FuelToFillInPercent { get; }
+        public TimeSpan TiresChangeDuration { get; }
+        public TimeSpan TimeLostForPitStop { get; }
+        public double NumberOfLapsWithFullFuel { get; }
     }
 }

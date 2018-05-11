@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BurningBox.GranTurismoSport.Strategie.BusinessModels.Contracts
 {
@@ -6,5 +7,6 @@ namespace BurningBox.GranTurismoSport.Strategie.BusinessModels.Contracts
     {
         List<IPitStop> PitStops { get; set; }
         TireType StartTireType { get; set; }
+        TimeSpan RaceTime { get; set; }
     }
 }
