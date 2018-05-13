@@ -18,6 +18,9 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
                 throw new InvalidOperationException("TiresDefinions is invalid, TiresType must be distinct");
             }
 
+
+            GetTiresSequence(raceDefinition.TiresDefinitions, 3);
+
             var strategieResults = new List<StrategieResult>();
             var fuelConsumptionPerLap = 100 / raceDefinition.NumberOfLapsWithFullFuel;
 
@@ -39,7 +42,7 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
             }
 
             StrategieResult result = null;
-            switch (raceDefinition.RaceMode)
+            switch(raceDefinition.RaceMode)
             {
                 case RaceMode.Race:
                     result = strategieResults.OrderBy(r => r.RaceTime).First();
@@ -48,18 +51,16 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
                     result = strategieResults.OrderBy(r => r.PitStops.Count).First();
                     break;
             }
-            
+
             return result;
         }
 
         private void RunLaps(IRaceDefinition raceDefinition, TiresType startTiresType, double fuelConsumptionPerLap, PitStrategie pitStrategie, StrategieResult strategie)
         {
-
-
             var startTireDefinition = raceDefinition.TiresDefinitions.First(t => t.TiresType == startTiresType);
 
             var currentFuelRate = 100.0;
-            var currentTiresRate = 100.0;   
+            var currentTiresRate = 100.0;
             var currentLapNumber = 0;
             var tireConsumptionPerLap = 100.0 / startTireDefinition.OptimalNumberOfLaps;
             var needRefuel = false;
@@ -124,7 +125,7 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
 
                     strategie.RaceTime = strategie.RaceTime.Add(raceDefinition.TimeLostForPitStop);
                 }
-                
+
                 strategie.RaceTime = strategie.RaceTime.Add(startTireDefinition.AverageLapTime);
             } while (!IsDone(raceDefinition, strategie, currentLapNumber));
         }
@@ -162,34 +163,67 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
         }
 
 
-
-        private List<TiresType> GetTiresSequence(IRaceDefinition raceDefinition, int size)
+        private void GetTiresSequence(List<ITiresDefinition> tiresDefinitions, int sequenceSize)
         {
+            var initialTires = tiresDefinitions.Select(t => t.TiresType).OrderBy(t => t).ToList();
 
+            var tiresTypes = new Dictionary<int, TiresType>();
 
-            var tiresSource = raceDefinition.TiresDefinitions.Select(t => t.TiresType);
-
-
-
-            foreach (var tiresType in tiresSource)
+            var i = 0;
+            foreach (var tiresType in initialTires)
             {
-                for (var i = 0; i < size; i++)
-                {
-                    
-
-
-
-
-                }
-
-
+                tiresTypes.Add(i++, tiresType);
             }
 
+            var sequences = new List<int[]>
+                            {
+                                new int[sequenceSize]
+                            };
 
+            var last = sequences[0];
 
+            var indexValues = new Dictionary<int, int>();
+            for (int j = 0; j < sequenceSize; j++)
+            {
+                indexValues.Add(j, 0);
+            }
 
-            return null;
+            do
+            {
+            } while (Increments(indexValues, sequenceSize, initialTires.Count-1, sequences, ref last));
         }
 
+        private bool Increments(Dictionary<int, int> indexValues, int sequenceSize, int maxValue, List<int[]> sequences, ref int[] last)
+        {
+            
+            for (var i = 0; i < sequenceSize; i++)
+            {
+                if (last[i]<maxValue)
+                {
+                    indexValues[i]++;
+                    break;
+                }
+            }
+
+            var nbFull = 0;
+            last = new int[sequenceSize];
+            sequences.Add(last);
+            for (var i = 0; i < sequenceSize; i++)
+            {
+                last[i] = indexValues[i];
+                if (last[i] == maxValue)
+                {
+
+                    nbFull++;
+                }
+            }
+
+            if (nbFull == sequenceSize)
+            {
+                return false;
+            }
+            
+            return true;
+        }
     }
 }
