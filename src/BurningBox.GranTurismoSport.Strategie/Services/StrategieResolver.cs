@@ -19,7 +19,7 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
             }
 
 
-            GetTiresSequence(raceDefinition.TiresDefinitions, 3);
+            GetTiresSequences(raceDefinition.TiresDefinitions, 4);
 
             var strategieResults = new List<StrategieResult>();
             var fuelConsumptionPerLap = 100 / raceDefinition.NumberOfLapsWithFullFuel;
@@ -163,10 +163,27 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
         }
 
 
-        private void GetTiresSequence(List<ITiresDefinition> tiresDefinitions, int sequenceSize)
+        private List<List<TiresType>> GetTiresSequences(List<ITiresDefinition> tiresDefinitions, int sequenceSize)
         {
             var initialTires = tiresDefinitions.Select(t => t.TiresType).OrderBy(t => t).ToList();
 
+            var tiresTypeDictonnary = InitTiresTypeDictonnary(initialTires);
+
+            var sequences = GetSequences(sequenceSize, initialTires);
+
+            var result  = new List<List<TiresType>>();
+            foreach (var sequence in sequences)
+            {
+                var tiresTypes = sequence.Select(t => tiresTypeDictonnary[t]).ToList();
+                result.Add(tiresTypes);
+            }
+            
+            return result;
+
+        }
+
+        private static Dictionary<int, TiresType> InitTiresTypeDictonnary(List<TiresType> initialTires)
+        {
             var tiresTypes = new Dictionary<int, TiresType>();
 
             var i = 0;
@@ -175,55 +192,59 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
                 tiresTypes.Add(i++, tiresType);
             }
 
+            return tiresTypes;
+        }
+
+        private List<int[]> GetSequences(int sequenceSize, List<TiresType> initialTires)
+        {
             var sequences = new List<int[]>
                             {
                                 new int[sequenceSize]
                             };
 
-            var last = sequences[0];
-
             var indexValues = new Dictionary<int, int>();
-            for (int j = 0; j < sequenceSize; j++)
+            for (var j = 0; j < sequenceSize; j++)
             {
                 indexValues.Add(j, 0);
             }
 
+            var sequenceNumber = (int)Math.Pow(initialTires.Count, sequenceSize);
             do
             {
-            } while (Increments(indexValues, sequenceSize, initialTires.Count-1, sequences, ref last));
+                Increments(indexValues, sequenceSize, initialTires.Count - 1, sequences);
+            } while (sequences.Count < sequenceNumber);
+
+            return sequences;
         }
 
-        private bool Increments(Dictionary<int, int> indexValues, int sequenceSize, int maxValue, List<int[]> sequences, ref int[] last)
+        private void Increments(Dictionary<int, int> indexValues, int sequenceSize, int maxValue, List<int[]> sequences)
         {
             
-            for (var i = 0; i < sequenceSize; i++)
+            indexValues[0]++;
+            if (indexValues[0] > maxValue)
             {
-                if (last[i]<maxValue)
+                indexValues[0] = 0;
+
+                for (var i = 1; i < sequenceSize; i++)
                 {
                     indexValues[i]++;
-                    break;
+                    if (indexValues[i] > maxValue)
+                    {
+                        indexValues[i] = 0;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
-
-            var nbFull = 0;
-            last = new int[sequenceSize];
-            sequences.Add(last);
+            var seq = new int[sequenceSize];
+            sequences.Add(seq);
             for (var i = 0; i < sequenceSize; i++)
             {
-                last[i] = indexValues[i];
-                if (last[i] == maxValue)
-                {
-
-                    nbFull++;
-                }
-            }
-
-            if (nbFull == sequenceSize)
-            {
-                return false;
+                seq[i] = indexValues[i];
             }
             
-            return true;
         }
     }
 }
