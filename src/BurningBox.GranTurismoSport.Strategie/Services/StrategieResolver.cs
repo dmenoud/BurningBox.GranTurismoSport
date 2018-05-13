@@ -18,16 +18,16 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
                 throw new InvalidOperationException("TiresDefinions is invalid, TiresType must be distinct");
             }
 
-
-            GetTiresSequences(raceDefinition.TiresDefinitions, 4);
-
             var strategieResults = new List<StrategieResult>();
             var fuelConsumptionPerLap = 100 / raceDefinition.NumberOfLapsWithFullFuel;
+            var tiresProviders = GetTiresProviders(raceDefinition);
 
-            foreach (var startTiresType in tireTypes)
+            foreach (PitStrategie pitStrategie in Enum.GetValues(typeof(PitStrategie)))
             {
-                foreach (PitStrategie pitStrategie in Enum.GetValues(typeof(PitStrategie)))
+                foreach (var tiresProvider in tiresProviders)
                 {
+                    var startTiresType = tiresProvider.GetNext();
+
                     var strategie = new StrategieResult
                                     {
                                         StartTiresType = startTiresType,
@@ -35,40 +35,42 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
                                         RaceTime = TimeSpan.Zero
                                     };
                     strategieResults.Add(strategie);
-                    RunLaps(raceDefinition, startTiresType, fuelConsumptionPerLap, pitStrategie, strategie);
-                }
 
-                // run
+                    RunLaps(raceDefinition, tiresProvider, fuelConsumptionPerLap, pitStrategie, strategie);
+                }
             }
+
 
             StrategieResult result = null;
             switch(raceDefinition.RaceMode)
             {
                 case RaceMode.Race:
-                    result = strategieResults.OrderBy(r => r.RaceTime).First();
+                    result = strategieResults.OrderBy(s => s.RaceTime).First();
                     break;
                 case RaceMode.Endurance:
-                    result = strategieResults.OrderBy(r => r.PitStops.Count).First();
+                    result = strategieResults
+                             .OrderByDescending(s => s.NumberOfLaps)
+                             .ThenBy(s => s.RaceTime)
+                             .First();
                     break;
             }
 
             return result;
         }
 
-        private void RunLaps(IRaceDefinition raceDefinition, TiresType startTiresType, double fuelConsumptionPerLap, PitStrategie pitStrategie, StrategieResult strategie)
+        private void RunLaps(IRaceDefinition raceDefinition, TiresProvider tiresProvider, double fuelConsumptionPerLap, PitStrategie pitStrategie, IStrategieResult strategie)
         {
-            var startTireDefinition = raceDefinition.TiresDefinitions.First(t => t.TiresType == startTiresType);
+            var tireDefinition = raceDefinition.TiresDefinitions.First(t => t.TiresType == strategie.StartTiresType);
 
             var currentFuelRate = 100.0;
             var currentTiresRate = 100.0;
-            var currentLapNumber = 0;
-            var tireConsumptionPerLap = 100.0 / startTireDefinition.OptimalNumberOfLaps;
+            var tireConsumptionPerLap = 100.0 / tireDefinition.OptimalNumberOfLaps;
             var needRefuel = false;
             var needChangeTires = false;
 
             do
             {
-                currentLapNumber++;
+                strategie.NumberOfLaps++;
                 currentFuelRate -= fuelConsumptionPerLap;
                 currentTiresRate -= tireConsumptionPerLap;
 
@@ -100,20 +102,24 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
                             break;
                     }
 
-
-                    strategie.PitStops.Add(new PitStop
-                                           {
-                                               Refuel = needRefuel,
-                                               ChangeTires = needChangeTires,
-                                               LapNumber = currentLapNumber,
-                                               TiresType = startTireDefinition.TiresType,
-                                           });
+                    var pitStop = new PitStop
+                                  {
+                                      Refuel = needRefuel,
+                                      ChangeTires = needChangeTires,
+                                      LapNumber = strategie.NumberOfLaps,
+                                      TiresType = tireDefinition.TiresType,
+                                  };
+                    strategie.PitStops.Add(pitStop);
 
                     if (needChangeTires)
                     {
                         strategie.RaceTime = strategie.RaceTime.Add(raceDefinition.TiresChangeDuration);
                         needChangeTires = false;
                         currentTiresRate = 100.0;
+                        var nextTires = tiresProvider.GetNext();
+                        tireDefinition = raceDefinition.TiresDefinitions.First(t => t.TiresType == nextTires);
+                        tireConsumptionPerLap = 100.0 / tireDefinition.OptimalNumberOfLaps;
+                        pitStop.TiresType = tireDefinition.TiresType;
                     }
 
                     if (needRefuel)
@@ -126,17 +132,17 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
                     strategie.RaceTime = strategie.RaceTime.Add(raceDefinition.TimeLostForPitStop);
                 }
 
-                strategie.RaceTime = strategie.RaceTime.Add(startTireDefinition.AverageLapTime);
-            } while (!IsDone(raceDefinition, strategie, currentLapNumber));
+                strategie.RaceTime = strategie.RaceTime.Add(tireDefinition.AverageLapTime);
+            } while (!IsDone(raceDefinition, strategie));
         }
 
-        private bool IsDone(IRaceDefinition raceDefinition, StrategieResult strategie, int currentLapNumber)
+        private bool IsDone(IRaceDefinition raceDefinition, IStrategieResult strategie)
         {
             var done = false;
             switch(raceDefinition.RaceMode)
             {
                 case RaceMode.Race:
-                    if (currentLapNumber == raceDefinition.NumberOfLaps)
+                    if (strategie.NumberOfLaps == raceDefinition.NumberOfLaps)
                     {
                         done = true;
                     }
@@ -163,23 +169,23 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
         }
 
 
-        private List<List<TiresType>> GetTiresSequences(List<ITiresDefinition> tiresDefinitions, int sequenceSize)
+        private List<TiresProvider> GetTiresProviders(IRaceDefinition raceDefinition)
         {
-            var initialTires = tiresDefinitions.Select(t => t.TiresType).OrderBy(t => t).ToList();
+            var initialTires = raceDefinition.TiresDefinitions.Select(t => t.TiresType).OrderBy(t => t).ToList();
 
             var tiresTypeDictonnary = InitTiresTypeDictonnary(initialTires);
 
-            var sequences = GetSequences(sequenceSize, initialTires);
+            var sequences = GetSequences(raceDefinition.EstimatedNumberOfPitStop, initialTires);
 
-            var result  = new List<List<TiresType>>();
+
+            var result = new List<TiresProvider>();
             foreach (var sequence in sequences)
             {
                 var tiresTypes = sequence.Select(t => tiresTypeDictonnary[t]).ToList();
-                result.Add(tiresTypes);
+                result.Add(new TiresProvider(tiresTypes));
             }
-            
-            return result;
 
+            return result;
         }
 
         private static Dictionary<int, TiresType> InitTiresTypeDictonnary(List<TiresType> initialTires)
@@ -219,7 +225,6 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
 
         private void Increments(Dictionary<int, int> indexValues, int sequenceSize, int maxValue, List<int[]> sequences)
         {
-            
             indexValues[0]++;
             if (indexValues[0] > maxValue)
             {
@@ -238,13 +243,13 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
                     }
                 }
             }
+
             var seq = new int[sequenceSize];
             sequences.Add(seq);
             for (var i = 0; i < sequenceSize; i++)
             {
                 seq[i] = indexValues[i];
             }
-            
         }
     }
 }

@@ -8,5 +8,6 @@ namespace BurningBox.GranTurismoSport.Strategie.BusinessModels.Contracts
         List<IPitStop> PitStops { get; set; }
         TiresType StartTiresType { get; set; }
         TimeSpan RaceTime { get; set; }
+        int NumberOfLaps { get; set; }
     }
 }
