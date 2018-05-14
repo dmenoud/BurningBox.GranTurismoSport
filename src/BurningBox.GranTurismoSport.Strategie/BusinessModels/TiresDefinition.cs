@@ -15,5 +15,10 @@ namespace BurningBox.GranTurismoSport.Strategie.BusinessModels
         public TiresType TiresType { get; }
         public int OptimalNumberOfLaps { get; }
         public TimeSpan AverageLapTime { get; }
+
+        public override string ToString()
+        {
+            return $"Tires: {this.TiresType,-16}, Optimal number of laps: {this.OptimalNumberOfLaps,3:N0}, Average lap time: {this.AverageLapTime}";
+        }
     }
 }

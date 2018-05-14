@@ -39,8 +39,7 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
                     RunLaps(raceDefinition, tiresProvider, fuelConsumptionPerLap, pitStrategie, strategie);
                 }
             }
-
-
+            
             StrategieResult result = null;
             switch(raceDefinition.RaceMode)
             {
@@ -74,12 +73,12 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
                 currentFuelRate -= fuelConsumptionPerLap;
                 currentTiresRate -= tireConsumptionPerLap;
 
-                if (currentFuelRate <= 20)
+                if (currentFuelRate <= raceDefinition.FuelReservePercent)
                 {
                     needRefuel = true;
                 }
 
-                if (currentTiresRate <= 20)
+                if (currentTiresRate <= 10)
                 {
                     needChangeTires = true;
                 }
@@ -108,6 +107,9 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
                                       ChangeTires = needChangeTires,
                                       LapNumber = strategie.NumberOfLaps,
                                       TiresType = tireDefinition.TiresType,
+                                      FuelState = currentFuelRate,
+                                      TiresState = currentTiresRate
+
                                   };
                     strategie.PitStops.Add(pitStop);
 
@@ -175,7 +177,7 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
 
             var tiresTypeDictonnary = InitTiresTypeDictonnary(initialTires);
 
-            var sequences = GetSequences(raceDefinition.EstimatedNumberOfPitStop, initialTires);
+            var sequences = GetSequences(5, initialTires);
 
 
             var result = new List<TiresProvider>();

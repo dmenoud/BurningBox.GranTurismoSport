@@ -8,5 +8,7 @@ namespace BurningBox.GranTurismoSport.Strategie.BusinessModels
         public bool ChangeTires { get; set; }
         public bool Refuel { get; set; }
         public TiresType TiresType { get; set; }
+        public double FuelState { get; set; }
+        public double TiresState { get; set; }
     }
 }

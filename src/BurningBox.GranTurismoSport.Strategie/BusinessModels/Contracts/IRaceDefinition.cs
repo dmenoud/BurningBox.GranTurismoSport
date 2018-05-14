@@ -16,6 +16,6 @@ namespace BurningBox.GranTurismoSport.Strategie.BusinessModels.Contracts
         TimeSpan TiresChangeDuration { get; }
         TimeSpan TimeLostForPitStop { get; }
         double NumberOfLapsWithFullFuel { get; }
-        int EstimatedNumberOfPitStop { get; }
+        double FuelReservePercent { get; }
     }
 }   
