@@ -10,5 +10,7 @@ namespace BurningBox.GranTurismoSport.Strategie.BusinessModels
         public TiresType StartTiresType { get; set; }
         public TimeSpan RaceTime { get; set; }
         public int NumberOfLaps { get; set; }
+        public double FuelEndState { get; set; }
+        public double TiresEndState { get; set; }
     }
 }

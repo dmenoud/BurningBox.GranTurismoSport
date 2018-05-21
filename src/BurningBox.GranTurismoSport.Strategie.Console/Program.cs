@@ -15,14 +15,14 @@ namespace BurningBox.GranTurismoSport.Strategie.Console
 
             var tireDefinitions = new List<ITiresDefinition>
                                   {
-                                      new TiresDefinition(TiresType.RacingSuperSoft, 5, new TimeSpan(0, 0, 2, 14, 500)),
-                                      new TiresDefinition(TiresType.RacingSoft, 7, new TimeSpan(0, 0, 2, 15, 300)),
-                                      new TiresDefinition(TiresType.RacingMedium, 9, new TimeSpan(0, 0, 2, 16, 700)),
-                                    //  new TiresDefinition(TiresType.RacingHard, 12, new TimeSpan(0, 0, 2, 19, 300)),
+                                      new TiresDefinition(TiresType.RacingSuperSoft, 5, new TimeSpan(0, 0, 2, 13, 900)),
+                                      new TiresDefinition(TiresType.RacingSoft, 6, new TimeSpan(0, 0, 2, 14, 900)),
+                                      new TiresDefinition(TiresType.RacingMedium, 9, new TimeSpan(0, 0, 2, 16, 200)),
+                                      //new TiresDefinition(TiresType.RacingHard, 12, new TimeSpan(0, 0, 2, 18, 300)),
                                   };
 
             var def = new RaceDefinition(TimeSpan.FromHours(1),
-                                         tireDefinitions, 
+                                         tireDefinitions,
                                          "Mon Track",
                                          new TimeSpan(0, 0, 0, 9, 500),
                                          60,
@@ -39,6 +39,7 @@ namespace BurningBox.GranTurismoSport.Strategie.Console
             {
                 System.Console.WriteLine($"\t{tiresDefinition}");
             }
+
             System.Console.WriteLine("Race definition:");
             System.Console.WriteLine($"\t{nameof(def.TrackName)} = {def.TrackName}");
             System.Console.WriteLine($"\t{nameof(def.TiresChangeDuration)} = {def.TiresChangeDuration}");
@@ -48,7 +49,7 @@ namespace BurningBox.GranTurismoSport.Strategie.Console
             System.Console.WriteLine($"\t{nameof(def.NumberOfLapsWithFullFuel)} = {def.NumberOfLapsWithFullFuel}");
             System.Console.WriteLine($"\t{nameof(def.FuelReservePercent)} = {def.FuelReservePercent}");
             System.Console.WriteLine();
-            
+
             var result = strategieResolver.Resolve(def);
 
             System.Console.WriteLine();
@@ -61,9 +62,11 @@ namespace BurningBox.GranTurismoSport.Strategie.Console
             var i = 1;
             foreach (var pitStop in result.PitStops)
             {
-                System.Console.WriteLine($"\tNo {i++,3:N0}, Lap = {pitStop.LapNumber,3:N0}, Refuel = {pitStop.Refuel,-5}, ChangeTires = {pitStop.ChangeTires,-5}, Tires = {pitStop.TiresType,-16}, FuelState = {pitStop.FuelState,6:F2}, TiresState = {pitStop.TiresState,6:F2}");
+                System.Console.WriteLine($"\tNo {i++,3:N0}, Lap = {pitStop.LapNumber,3:N0}, Refuel = {pitStop.Refuel,3:F0}%, ChangeTires = {pitStop.ChangeTires,-5}, Tires = {pitStop.TiresType,-16}, FuelState = {pitStop.FuelState,6:F2}%, TiresState = {pitStop.TiresState,6:F2}%");
             }
 
+            System.Console.WriteLine($"Fuel end state {result.FuelEndState,3:N3}%");
+            System.Console.WriteLine($"Tires end state {result.TiresEndState,3:N3}%");
 
             System.Console.ReadLine();
         }

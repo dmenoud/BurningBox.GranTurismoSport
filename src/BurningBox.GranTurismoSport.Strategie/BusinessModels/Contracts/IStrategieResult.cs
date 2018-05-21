@@ -9,5 +9,7 @@ namespace BurningBox.GranTurismoSport.Strategie.BusinessModels.Contracts
         TiresType StartTiresType { get; set; }
         TimeSpan RaceTime { get; set; }
         int NumberOfLaps { get; set; }
+        double FuelEndState { get; set; }
+        double TiresEndState { get; set; }
     }
 }

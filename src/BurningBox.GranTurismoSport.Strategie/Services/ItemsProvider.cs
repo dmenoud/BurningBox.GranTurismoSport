@@ -3,18 +3,18 @@ using BurningBox.GranTurismoSport.Strategie.BusinessModels;
 
 namespace BurningBox.GranTurismoSport.Strategie.Services
 {
-    public class TiresProvider
+    public class ItemsProvider<TItem>
     {
-        private readonly List<TiresType> _tiresTypes;
+        private readonly List<TItem> _tiresTypes;
         private int _currentIndex;
 
 
-        public TiresProvider(List<TiresType> tiresTypes)
+        public ItemsProvider(List<TItem> tiresTypes)
         {
             _tiresTypes = tiresTypes;
         }
 
-        public TiresType GetNext()
+        public TItem GetNext()
         {
             var result = _tiresTypes[_currentIndex];
             _currentIndex++;
