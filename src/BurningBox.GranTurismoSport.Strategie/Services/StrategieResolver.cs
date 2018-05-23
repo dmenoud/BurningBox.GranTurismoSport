@@ -23,14 +23,14 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
             var fuelConsumptionPerLap = 100 / raceDefinition.NumberOfLapsWithFullFuel;
             var tiresProviders = GetProviders(5, raceDefinition.TiresDefinitions.Select(t => t.TiresType).OrderBy(t => t).ToList());
             var fuelProviders = GetProviders(4, new[]
-                                             {
-                                                 50,
-                                                 60,
-                                                 70,
-                                                 80,
-                                                 90,
-                                                 100
-                                             });
+                                                {
+                                                    50,
+                                                    60,
+                                                    70,
+                                                    80,
+                                                    90,
+                                                    100
+                                                });
 
             foreach (PitStrategie pitStrategie in Enum.GetValues(typeof(PitStrategie)))
             {
@@ -77,86 +77,120 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
             var currentFuelRate = 100.0;
             var currentTiresRate = 100.0;
             var tireConsumptionPerLap = 100.0 / tireDefinition.OptimalNumberOfLaps;
-            var needRefuel = false;
-            var needChangeTires = false;
-
             var nextRefuel = fuelProvider.GetNext();
-
+            var lapDistance = 0;
+            var isFinalLap = false;
             do
             {
-                strategie.NumberOfLaps++;
-                currentFuelRate -= fuelConsumptionPerLap;
-                currentTiresRate -= tireConsumptionPerLap;
-
-                if (currentFuelRate <= raceDefinition.FuelReservePercent)
+                if (IncrementsRaceTimeLap(strategie, ref lapDistance, raceDefinition.CircuitLenght, tireDefinition.AverageLapTime))
                 {
-                    needRefuel = true;
+
+                    CheckPitStop(raceDefinition, tiresProvider, pitStrategie, strategie, fuelProvider, ref currentFuelRate, ref currentTiresRate, ref nextRefuel, ref tireDefinition, ref tireConsumptionPerLap, fuelConsumptionPerLap);
+
+                    if (isFinalLap)
+                    {
+                        break;
+                    }
                 }
 
-                if (currentTiresRate <= 10)
-                {
-                    needChangeTires = true;
-                }
-
-                if (needChangeTires || needRefuel)
-                {
-                    switch(pitStrategie)
-                    {
-                        case PitStrategie.OnlyNeeded:
-                            break;
-                        case PitStrategie.FuelEachTime:
-                            needRefuel = currentFuelRate< nextRefuel  ;
-                            break;
-                        case PitStrategie.TiresEachTime:
-                            needChangeTires = true;
-                            break;
-                        case PitStrategie.FuelAndTiresEachTime:
-                            needRefuel = currentFuelRate < nextRefuel;
-                            needChangeTires = true;
-                            break;
-                    }
-
-                    var pitStop = new PitStop
-                                  {
-                                      Refuel = needRefuel ? nextRefuel : 0,
-                                      ChangeTires = needChangeTires,
-                                      LapNumber = strategie.NumberOfLaps,
-                                      TiresType = tireDefinition.TiresType,
-                                      FuelState = currentFuelRate,
-                                      TiresState = currentTiresRate
-                                  };
-                    strategie.PitStops.Add(pitStop);
-
-                    if (needChangeTires)
-                    {
-                        strategie.RaceTime = strategie.RaceTime.Add(raceDefinition.TiresChangeDuration);
-                        needChangeTires = false;
-                        currentTiresRate = 100.0;
-                        var nextTires = tiresProvider.GetNext();
-                        tireDefinition = raceDefinition.TiresDefinitions.First(t => t.TiresType == nextTires);
-                        tireConsumptionPerLap = 100.0 / tireDefinition.OptimalNumberOfLaps;
-                        pitStop.TiresType = tireDefinition.TiresType;
-                    }
-
-                    if (needRefuel)
-                    {
-                        strategie.RaceTime = strategie.RaceTime.Add(GetFuelFillingTime(raceDefinition, currentFuelRate, nextRefuel));
-                        needRefuel = false;
-                        currentFuelRate = nextRefuel;
-                        nextRefuel = fuelProvider.GetNext();
-                    }
-
-                    strategie.RaceTime = strategie.RaceTime.Add(raceDefinition.TimeLostForPitStop);
-                }
-
-                strategie.RaceTime = strategie.RaceTime.Add(tireDefinition.AverageLapTime);
                 strategie.TiresEndState = currentTiresRate;
                 strategie.FuelEndState = currentFuelRate;
+                lapDistance++;
 
-            } while (!IsDone(raceDefinition, strategie));
+                if (!isFinalLap)
+                {
+                    isFinalLap = IsFinalLap(raceDefinition, strategie);
+                }
+                
+            } while (true);
         }
 
-        private bool IsDone(IRaceDefinition raceDefinition, IStrategieResult strategie)
+        private void CheckPitStop(IRaceDefinition raceDefinition, ItemsProvider<TiresType> tiresProvider, PitStrategie pitStrategie, IStrategieResult strategie, ItemsProvider<int> fuelProvider, ref double currentFuelRate, ref double currentTiresRate, ref int nextRefuel, ref ITiresDefinition tireDefinition, ref double tireConsumptionPerLap, double fuelConsumptionPerLap)
+        {
+            var needRefuel = false;
+            var needChangeTires= false;
+
+            currentFuelRate -= fuelConsumptionPerLap;
+            currentTiresRate -= tireConsumptionPerLap;
+
+            if (currentFuelRate <= raceDefinition.FuelReservePercent)
+            {
+                needRefuel = true;
+            }
+
+            if (currentTiresRate <= 10)
+            {
+                needChangeTires = true;
+            }
+
+            if (needChangeTires || needRefuel)
+            {
+                switch(pitStrategie)
+                {
+                    case PitStrategie.OnlyNeeded:
+                        break;
+                    case PitStrategie.FuelEachTime:
+                        needRefuel = currentFuelRate < nextRefuel;
+                        break;
+                    case PitStrategie.TiresEachTime:
+                        needChangeTires = true;
+                        break;
+                    case PitStrategie.FuelAndTiresEachTime:
+                        needRefuel = currentFuelRate < nextRefuel;
+                        needChangeTires = true;
+                        break;
+                }
+
+                var pitStop = new PitStop
+                              {
+                                  Refuel = needRefuel ? nextRefuel : 0,
+                                  ChangeTires = needChangeTires,
+                                  LapNumber = strategie.NumberOfLaps,
+                                  TiresType = tireDefinition.TiresType,
+                                  FuelState = currentFuelRate,
+                                  TiresState = currentTiresRate
+                              };
+                strategie.PitStops.Add(pitStop);
+
+                if (needChangeTires)
+                {
+                    strategie.RaceTime = strategie.RaceTime.Add(raceDefinition.TiresChangeDuration);
+                    currentTiresRate = 100.0;
+                    var nextTires = tiresProvider.GetNext();
+                    tireDefinition = raceDefinition.TiresDefinitions.First(t => t.TiresType == nextTires);
+                    tireConsumptionPerLap = 100.0 / tireDefinition.OptimalNumberOfLaps;
+                    pitStop.TiresType = tireDefinition.TiresType;
+                }
+
+                if (needRefuel)
+                {
+                    strategie.RaceTime = strategie.RaceTime.Add(GetFuelFillingTime(raceDefinition, currentFuelRate, nextRefuel));
+                    currentFuelRate = nextRefuel;
+                    nextRefuel = fuelProvider.GetNext();
+                }
+
+                strategie.RaceTime = strategie.RaceTime.Add(raceDefinition.TimeLostForPitStop);
+            }
+        }
+
+        private bool IncrementsRaceTimeLap(IStrategieResult strategie, ref int lapDistance, int circuitLenght, TimeSpan averageLapTime)
+        {
+            var lapMilliSeconds = averageLapTime.TotalMilliseconds;
+            var currentLapMilliseconds = lapMilliSeconds * lapDistance / circuitLenght;
+            strategie.RaceTime = strategie.RaceTime.Add(TimeSpan.FromMilliseconds(currentLapMilliseconds));
+            strategie.RaceDistance += lapDistance;
+
+            
+           if (strategie.RaceDistance % circuitLenght == 0)
+            {
+                strategie.NumberOfLaps++;
+                lapDistance = 0;
+                return true;
+            }
+            return false;
+        }
+
+        private bool IsFinalLap(IRaceDefinition raceDefinition, IStrategieResult strategie)
         {
             var done = false;
             switch(raceDefinition.RaceMode)
@@ -189,7 +223,7 @@ namespace BurningBox.GranTurismoSport.Strategie.Services
         }
 
 
-        private List<ItemsProvider<TItem>> GetProviders<TItem>(int sequenceSize ,IEnumerable<TItem> initialItems)
+        private List<ItemsProvider<TItem>> GetProviders<TItem>(int sequenceSize, IEnumerable<TItem> initialItems)
         {
             var items = initialItems.ToArray();
             var itemDictionary = InitItemDictionary(items);

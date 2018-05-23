@@ -7,7 +7,7 @@ namespace BurningBox.GranTurismoSport.Strategie.BusinessModels
 {
     public class RaceDefinition : IRaceDefinition
     {
-        public RaceDefinition(TimeSpan raceDuration, [NotNull] List<ITiresDefinition> tireDefinitions, string trackName, TimeSpan fuelFillingDuration, int fuelToFillInPercent, TimeSpan tiresChangeDuration, TimeSpan timeLostForPitStop, double numberOfLapsWithFullFuel, double fuelReservePercent)
+        public RaceDefinition(TimeSpan raceDuration, [NotNull] List<ITiresDefinition> tireDefinitions, string trackName, TimeSpan fuelFillingDuration, int fuelToFillInPercent, TimeSpan tiresChangeDuration, TimeSpan timeLostForPitStop, double numberOfLapsWithFullFuel, double fuelReservePercent, int circuitLenght)
         {
             this.RaceDuration = raceDuration;
             this.TiresDefinitions = tireDefinitions;
@@ -18,10 +18,11 @@ namespace BurningBox.GranTurismoSport.Strategie.BusinessModels
             this.TimeLostForPitStop = timeLostForPitStop;
             this.NumberOfLapsWithFullFuel = numberOfLapsWithFullFuel;
             this.FuelReservePercent = fuelReservePercent;
+            this.CircuitLenght = circuitLenght;
             this.RaceMode = RaceMode.Endurance;
         }
 
-        public RaceDefinition(int numberOfLaps, [NotNull] List<ITiresDefinition> tireDefinitions, string trackName, TimeSpan fuelFillingDuration, int fuelToFillInPercent, TimeSpan tiresChangeDuration, TimeSpan timeLostForPitStop, double numberOfLapsWithFullFuel, double fuelReservePercent)
+        public RaceDefinition(int numberOfLaps, [NotNull] List<ITiresDefinition> tireDefinitions, string trackName, TimeSpan fuelFillingDuration, int fuelToFillInPercent, TimeSpan tiresChangeDuration, TimeSpan timeLostForPitStop, double numberOfLapsWithFullFuel, double fuelReservePercent, int circuitLenght)
         {
             this.NumberOfLaps = numberOfLaps;
             this.TiresDefinitions = tireDefinitions;
@@ -32,6 +33,7 @@ namespace BurningBox.GranTurismoSport.Strategie.BusinessModels
             this.TimeLostForPitStop = timeLostForPitStop;
             this.NumberOfLapsWithFullFuel = numberOfLapsWithFullFuel;
             this.FuelReservePercent = fuelReservePercent;
+            this.CircuitLenght = circuitLenght;
             this.RaceMode = RaceMode.Race;
         }
 
@@ -46,5 +48,6 @@ namespace BurningBox.GranTurismoSport.Strategie.BusinessModels
         public TimeSpan TimeLostForPitStop { get; }
         public double NumberOfLapsWithFullFuel { get; }
         public double FuelReservePercent { get; }
+        public int CircuitLenght { get; }
     }
 }

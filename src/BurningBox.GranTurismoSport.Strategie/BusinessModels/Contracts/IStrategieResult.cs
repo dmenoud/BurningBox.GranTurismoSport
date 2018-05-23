@@ -11,5 +11,8 @@ namespace BurningBox.GranTurismoSport.Strategie.BusinessModels.Contracts
         int NumberOfLaps { get; set; }
         double FuelEndState { get; set; }
         double TiresEndState { get; set; }
+        int RaceDistance { get; set; }
+
+        int DistanceAtEnduranceTime { get; set; }
     }
 }

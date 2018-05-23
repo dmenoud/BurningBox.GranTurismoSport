@@ -29,7 +29,8 @@ namespace BurningBox.GranTurismoSport.Strategie.Console
                                          new TimeSpan(0, 0, 0, 4, 100),
                                          new TimeSpan(0, 0, 0, 10, 0),
                                          16.5,
-                                         10);
+                                         10,
+                                         6213);
 
 
             System.Console.WriteLine("Parmeters:");
